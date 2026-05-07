@@ -69,7 +69,7 @@ slopcheck [options]
 	       (display p)
 	       (display " exists")
 	       (newline))))
-       '("AGENTS.md" "CLAUDE.md" ".claude"
+       '("AGENTS.md" "CLAUDE.md" ".claude" "llms.txt"
 	 ".gemini" ".agents" ".llms" ".codex"))
 
   (let* ((repository (repository-open path))
