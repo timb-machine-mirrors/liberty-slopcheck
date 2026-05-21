@@ -95,7 +95,14 @@ slopcheck [options]
 		       (display " for commit ")
 		       (display (oid->string oid))
 		       (newline))))
-	       '("Copilot" "Claude Opus" "Claude Sonnet")))
+	       '("Copilot" "copilot" "Claude Opus" "Claude Sonnet" "Claude <"))
+
+	      (if (string-contains body "Assisted-by:")
+		  (begin
+		    (display "Found Assisted-by: for commit ")
+		    (display (oid->string oid))
+		    (newline))))
+
 	    (loop (revwalk-next! walker)))))))
 
 (libgit2-shutdown!)
