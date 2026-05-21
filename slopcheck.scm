@@ -95,7 +95,7 @@ slopcheck [options]
 		       (display " for commit ")
 		       (display (oid->string oid))
 		       (newline))))
-	       '("Copilot" "copilot" "Claude Opus" "Claude Sonnet" "Claude <"))
+	       '("Copilot" "copilot" "Claude Opus" "Claude Sonnet" "Claude <noreply@anthropic.com>"))
 
 	      (if (string-contains body "Assisted-by:")
 		  (begin
