@@ -70,6 +70,7 @@ slopcheck [options]
 	       (display " exists")
 	       (newline))))
        '("AGENTS.md" "CLAUDE.md" ".claude" "llms.txt"
+	 ".github/copilot-instructions.md"
 	 ".gemini" ".agents" ".llms" ".codex"))
 
   (let* ((repository (repository-open path))
