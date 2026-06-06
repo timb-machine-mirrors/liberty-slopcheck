@@ -71,7 +71,13 @@ slopcheck [options]
 	       (newline))))
        '("AGENTS.md" "CLAUDE.md" ".claude" "llms.txt"
 	 ".github/copilot-instructions.md"
-	 ".gemini" ".agents" ".llms" ".codex"))
+	 ".gemini" ".agents" ".llms" ".codex"
+	 ;; https://code.claude.com/docs/en/mcp
+	 ".mcp.json"
+	 ;; https://pypi.org/project/codemcp/
+	 "codemcp.toml"
+	 ;; https://github.com/gastownhall/beads
+	 ".beads/issues.jsonl"))
 
   (let* ((repository (repository-open path))
 	 (head       (repository-head repository))
