@@ -77,7 +77,9 @@ slopcheck [options]
 	 ;; https://pypi.org/project/codemcp/
 	 "codemcp.toml"
 	 ;; https://github.com/gastownhall/beads
-	 ".beads/issues.jsonl"))
+	 ".beads"
+	 ".claude-plugin"
+	 ".agent"))
 
   (let* ((repository (repository-open path))
 	 (head       (repository-head repository))
