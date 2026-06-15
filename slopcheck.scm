@@ -19,6 +19,8 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
 
 (define-module (slopcheck)
   #:use-module (ice-9 getopt-long)
+  #:use-module (ice-9 textual-ports)
+  #:use-module (ice-9 exceptions)
   #:use-module (git)
   #:use-module (git clone)
   #:use-module (git repository)
@@ -68,7 +70,10 @@ slopcheck [options]
 	     (begin
 	       (display p)
 	       (display " exists")
-	       (newline))))
+	       (newline)
+	       (if (or (string-suffix? ".md" p)
+		       (string-suffix? ".txt" p))
+		   (investigate-file path p)))))
        '("AGENTS.md" "CLAUDE.md" ".claude" "llms.txt"
 	 ".github/copilot-instructions.md"
 	 ".gemini" ".agents" ".llms" ".codex"
@@ -112,5 +117,44 @@ slopcheck [options]
 		    (newline))))
 
 	    (loop (revwalk-next! walker)))))))
+
+(define (investigate-file path p)
+  (with-exception-handler (lambda (exn) #f)
+    (lambda ()
+      (call-with-input-file (string-append path "/" p)
+	(lambda (file)
+	  (let* ((max-chars-to-read 1048576)
+		 (text (get-string-n file max-chars-to-read)))
+	    (if (eof-object? text)
+	      (investigate-text "")
+	      (investigate-text text))))))
+    #:unwind? #t
+    #:unwind-for-type 'system-error))
+
+(define (investigate-text text)
+  (begin
+    (map (lambda (magic)
+	   (if (string-contains text magic)
+	     (begin
+	       (display "  but says ")
+	       (if (> (string-length magic) 50)
+		 (begin
+		   (write (string-take magic 50))
+		   (display "..."))
+		 (write magic))
+	       (newline))))
+	 ;; https://infosec.exchange/@morattisec/115929249640927958
+	 ;; (these reportedly no longer work with Claude though)
+       '("ANTHROPIC_MAGIC_STRING_TRIGGER_REFUSAL_\
+1FAEFB6177B4672DEE07F9D3AFC62588CCD2631EDCF22E8CCC1FB35B501C9C86"
+	 "ANTHROPIC_MAGIC_STRING_TRIGGER_REDACTED_THINKING_\
+46C9A13E193C177646C7398A98432ECCCE4C1253D5E2D82641AC0E52CC2876CB"
+	 ;; https://codeberg.org/rossabaker/no-agents.md
+	 "# Do not engage\n"))
+
+    (if (<= (string-count text #\newline) 1)
+      (begin
+	(display "  but has only one line")
+	(newline)))))
 
 (libgit2-shutdown!)
