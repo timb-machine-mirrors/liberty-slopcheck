@@ -21,6 +21,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+set -e
+
 # (define (investigate path)
 #   (map (lambda (p)
 # 	 (if (file-exists? (string-append path "/" p))
@@ -157,7 +159,7 @@ usage() {
 	echo ""
 	bold "FLAGS"
 	echo "  -h, --help         Display this help message"
-	echo "  -c, --clone URL    Checks a git repository, cloning into './target'"
+	echo "  -c, --clone URL    Checks a git repository, cloning into 'TEMPDIR/target'"
 	echo "  -p, --path PATH    Show help for command"
 	echo ""
 	bold "EXAMPLES"
@@ -170,7 +172,7 @@ usage() {
 }
 
 slopcheck_by_url() {
-	die "TODO: implement slopcheck_by_url"
+	( cd "$(mktemp -q -d -t 'slopcheck.XXXXXX')" ; git clone -- "$1" target ; slopcheck_by_path target ; ) # TODO: clean up temp dir
 }
 
 slopcheck_by_path() {
