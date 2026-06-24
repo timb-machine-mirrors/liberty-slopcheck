@@ -75,7 +75,7 @@
 #
 # 	    (loop (revwalk-next! walker)))))))
 investigate() {
-  true
+	true
 }
 
 # (define (investigate-file path p)
@@ -91,7 +91,7 @@ investigate() {
 #     #:unwind? #t
 #     #:unwind-for-type 'system-error))
 investigate-file() {
-  true
+	true
 }
 
 # (define (investigate-text text)
@@ -118,31 +118,87 @@ investigate-file() {
 # 	(display "  but has only one line")
 # 	(newline)))))
 investigate-text() {
-  true
+	true
 }
 
-exit 1 # TODO complete implementation
+bold() {
+	if [ -x "$(command -v tput)" ]
+	then
+		tput bold
+	fi
 
-true << END_COMMENT
+	echo "$@"
 
-exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
-(define (main args)
-  (let* ((option-spec
-	  '((help  (single-char #\h) (value #f))
-	    (clone (single-char #\c) (value #t))
-	    (path  (single-char #\p) (value #t))))
-	 (options     (getopt-long args option-spec))
-	 (clone-path  (option-ref options 'clone #f))
-	 (local-path  (option-ref options 'path  #f))
-	 (help-chosen (or (option-ref options 'help  #f)
-			  (= 1 (length args)))))
+	if [ -x "$(command -v tput)" ]
+	then
+		tput sgr0
+	fi
+}
 
-    (cond (help-chosen
-	   (display "\
-slopcheck [options]
-  -h, --help       Display this help message
-  -c, --clone URL  Checks a git repository, cloning into `target`
-  -p, --path PATH  Checks a git repository at a path
-"))
+err() {
+	if [ "${GITHUB_ACTIONS}" ]
+	then
+		echo "::error::$@"
+	else
+		echo "$@" 1>&2
+	fi
+}
 
-END_COMMENT
+die() {
+	err "$@"
+	exit 1
+}
+
+usage() {
+	echo "SlopCheck - Check for signs of LLM agents in git repositories"
+	echo ""
+	bold "USAGE"
+	echo "  slopcheck [options]"
+	echo ""
+	bold "FLAGS"
+	echo "  -h, --help         Display this help message"
+	echo "  -c, --clone URL    Checks a git repository, cloning into './target'"
+	echo "  -p, --path PATH    Show help for command"
+	echo ""
+	bold "EXAMPLES"
+	echo "  $ slopcheck --url https://example.com/repo"
+	echo "  $ slopcheck --path path/to/repo"
+	echo ""
+	bold "LEARN MORE"
+	echo "  Use 'slopcheck --help' for more info"
+	echo ""
+}
+
+slopcheck_by_url() {
+	die "TODO: implement slopcheck_by_url"
+}
+
+slopcheck_by_path() {
+	die "TODO: implement slopcheck_by_path"
+}
+
+main() {
+	if [ "$#" -lt 1 ]
+	then
+		usage
+		exit 1
+	fi
+
+	while [ "$#" -gt 0 ]
+	do
+		case "$1" in
+			-h | --help   ) usage                       ; exit  0 ;;
+
+			-c | --clone  ) slopcheck_by_url "$2"       ; shift 2 ;;
+			--clone=*     ) slopcheck_by_url "${1#*=}"  ; shift 1 ;;
+
+			-p | --path   ) slopcheck_by_path "$2"      ; shift 2 ;;
+			--path=*      ) slopcheck_by_path "${1#*=}" ; shift 1 ;;
+
+			-*            ) die "unknown option '$1'"             ;;
+			*             ) break                                 ;;
+		esac
+	done
+}
+
+main $@
