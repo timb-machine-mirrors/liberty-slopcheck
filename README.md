@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2026 Anna Liberty <liberty.817@proton.me>
+SPDX-FileCopyrightText: 2026 Y. Meyer-Norwood <norwd@noreply.codeberg.org>
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
 # SlopCheck
 
 Check for signs of LLM agents in git repositories.
@@ -57,7 +63,8 @@ If you aren't comfortable with Guile, [opening an issue](https://codeberg.org/li
 
 ## License
 
-Copyright © 2026  Anna Liberty
+Copyright © 2026 Anna Liberty
+Copyright © 2026 Y. Meyer-Norwood
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
