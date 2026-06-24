@@ -1,5 +1,11 @@
 #!/usr/bin/env sh
 
+#
+# SPDX-FileCopyrightText: 2026 Y. Meyer-Norwood <norwd@noreply.codeberg.org>
+# SPDX-FileCopyrightText: 2026 Anna Liberty <liberty.817@proton.me>
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
 exit 1 # TODO complete implementation
 
 true << END_COMMENT
