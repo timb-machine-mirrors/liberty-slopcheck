@@ -1,0 +1,47 @@
+#
+# SPDX-FileCopyrightText: 2026 Y. Meyer-Norwood <norwd@noreply.codeberg.org>
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+---
+
+name: "Run Linters"
+on: push
+concurrency:
+  group: ${{ forgejo.workflow_ref }}
+  cancel-in-progress: true
+
+jobs:
+  linters:
+    name: "Run Linters"
+    runs-on: codeberg-small-lazy
+    timeout-minutes: 10
+    steps:
+
+      - name: "Install Dependencies"
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y reuse
+
+          curl -fsSLo- "https://github.com/koalaman/shellcheck/releases/download/latest/shellcheck-latest.linux.x86_64.tar.xz" | sudo tar xvJ -C /usr/bin --overwrite --strip-components=1 shellcheck-latest/shellcheck
+          curl -fsSLo- "https://github.com/editorconfig-checker/editorconfig-checker/releases/download/v3.7.0/editorconfig-checker-linux-amd64.tar.gz" | sudo tar xvz -C /usr/bin editorconfig-checker
+
+      - name: "Checkout (for linting)"
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: "Run Linters"
+        run: |
+          reuse lint
+          editorconfig-checker --verbose
+
+          for _file in $(git ls-files | xargs -IFILE file FILE | grep script | sed 's/:.*//')
+          do
+            for _severity in style info warning error
+            do
+              shellcheck --severity "${_severity}" "${_file}"
+            done
+          done
+
+...
