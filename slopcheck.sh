@@ -1,4 +1,9 @@
 #!/usr/bin/env sh
+
+exit 1 # TODO complete implementation
+
+true << END_COMMENT
+
 exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
 !#
 ;; SlopCheck -- Check for signs of LLM agents in git repositories.
@@ -158,3 +163,5 @@ slopcheck [options]
 	(newline)))))
 
 (libgit2-shutdown!)
+
+END_COMMENT
