@@ -57,7 +57,7 @@ If you aren't comfortable with Guile, [opening an issue](https://codeberg.org/li
 
 ## License
 
-Copyright © 2026  Anna Liberty
+Copyright © 2026  Anna Liberty <liberty.817@proton.me>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

@@ -2,7 +2,7 @@
 exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
 !#
 ;; SlopCheck -- Check for signs of LLM agents in git repositories.
-;; Copyright © 2026  Anna Liberty
+;; Copyright © 2026  Anna Liberty <liberty.817@proton.me>
 ;;
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
