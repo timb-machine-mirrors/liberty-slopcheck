@@ -107,7 +107,7 @@ investigate() {
 # 	      (investigate-text text))))))
 #     #:unwind? #t
 #     #:unwind-for-type 'system-error))
-investigate-file() {
+investigate_file() {
 	true
 }
 
@@ -134,7 +134,7 @@ investigate-file() {
 #       (begin
 # 	(display "  but has only one line")
 # 	(newline)))))
-investigate-text() {
+investigate_text() {
 	true
 }
 
