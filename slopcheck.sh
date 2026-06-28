@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
 #
 # SPDX-FileCopyrightText: 2026 Anna Liberty <liberty.817@proton.me>
