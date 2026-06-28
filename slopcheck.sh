@@ -5,7 +5,22 @@
 # SPDX-FileCopyrightText: 2026 Y. Meyer-Norwood <norwd@noreply.codeberg.org>
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# SlopCheck -- Check for signs of LLM agents in git repositories.
+# SlopCheck - Check for signs of LLM agents in git repositories
+#
+# USAGE
+#   slopcheck [options]
+#
+# FLAGS
+#   -h, --help         Display this help message
+#   -c, --clone URL    Checks a git repository, cloning into 'TEMPDIR/target'
+#   -p, --path PATH    Show help for command
+#
+# EXAMPLES
+#   $ slopcheck --url https://example.com/repo
+#   $ slopcheck --path path/to/repo
+#
+# LEARN MORE
+#   Use 'slopcheck --help' for more info
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
