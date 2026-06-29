@@ -114,6 +114,18 @@ slopcheck [options]
 		  (begin
 		    (display "Found Assisted-by: for commit ")
 		    (display (oid->string oid))
+		    (newline)))
+
+	      (if (string-contains body "AI-Assisted-By:")
+		  (begin
+		    (display "Found AI-Assisted-By: for commit ")
+		    (display (oid->string oid))
+		    (newline)))
+
+	      (if (string-contains body "Generated-By:")
+		  (begin
+		    (display "Found Generated-By: for commit ")
+		    (display (oid->string oid))
 		    (newline))))
 
 	    (loop (revwalk-next! walker)))))))
