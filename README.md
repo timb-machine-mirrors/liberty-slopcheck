@@ -13,7 +13,7 @@ SlopCheck aims to minimize false positives. Most of the criteria checked assume 
   Note: most distributions provide an old version of Guile-Git.
   Installing manually or using Guix may be required.
 
-Both of these (and their dependencies) can be pulled into a local environment with `guix shell`.
+Both of these (and their dependencies) can be pulled into a local environment with `guix shell -m manifest.scm`.
 
 ## Usage
 
