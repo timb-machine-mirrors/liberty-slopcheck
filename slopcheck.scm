@@ -96,6 +96,12 @@ slopcheck [options]
       (if oid
 	  (begin
 	    (let* ((commit (commit-lookup repository oid))
+		   (author-sig (commit-author commit))
+		   (author-name (signature-name author-sig))
+		   (author-email (signature-email author-sig))
+		   (committer-sig (commit-committer commit))
+		   (committer-name (signature-name committer-sig))
+		   (committer-email (signature-email committer-sig))
 		   (body (commit-body commit)))
 
 	      (for-each
@@ -126,7 +132,22 @@ slopcheck [options]
 		  (begin
 		    (display "Found Generated-By: for commit ")
 		    (display (oid->string oid))
-		    (newline))))
+		    (newline)))
+
+	      ;; https://github.com/anthropics/claude-code/issues/69201
+	      (if (string=? author-email "noreply@anthropic.com")
+		  (if (string-contains author-name "Claude")
+		      (begin
+			(display "Found author Claude for commit ")
+			(display (oid->string oid))
+			(newline))))
+
+	      (if (string=? committer-email "noreply@anthropic.com")
+		  (if (string-contains committer-name "Claude")
+		      (begin
+			(display "Found committer Claude for commit ")
+			(display (oid->string oid))
+			(newline)))))
 
 	    (loop (revwalk-next! walker)))))))
 
