@@ -106,7 +106,7 @@ slopcheck [options]
 
 	      (for-each
 	       (lambda (name)
-		 (if (string-contains
+		 (if (string-contains-ci
 		      body (string-append "Co-authored-by: " name))
 		     (begin
 		       (display "Found co-author ")
@@ -116,19 +116,19 @@ slopcheck [options]
 		       (newline))))
 	       '("Copilot" "copilot" "Claude Opus" "Claude Sonnet" "Claude <noreply@anthropic.com>"))
 
-	      (if (string-contains body "Assisted-by:")
+	      (if (string-contains-ci body "Assisted-by:")
 		  (begin
 		    (display "Found Assisted-by: for commit ")
 		    (display (oid->string oid))
 		    (newline)))
 
-	      (if (string-contains body "AI-Assisted-By:")
+	      (if (string-contains-ci body "AI-Assisted-By:")
 		  (begin
 		    (display "Found AI-Assisted-By: for commit ")
 		    (display (oid->string oid))
 		    (newline)))
 
-	      (if (string-contains body "Generated-By:")
+	      (if (string-contains-ci body "Generated-By:")
 		  (begin
 		    (display "Found Generated-By: for commit ")
 		    (display (oid->string oid))
@@ -136,14 +136,14 @@ slopcheck [options]
 
 	      ;; https://github.com/anthropics/claude-code/issues/69201
 	      (if (string=? author-email "noreply@anthropic.com")
-		  (if (string-contains author-name "Claude")
+		  (if (string-contains-ci author-name "Claude")
 		      (begin
 			(display "Found author Claude for commit ")
 			(display (oid->string oid))
 			(newline))))
 
 	      (if (string=? committer-email "noreply@anthropic.com")
-		  (if (string-contains committer-name "Claude")
+		  (if (string-contains-ci committer-name "Claude")
 		      (begin
 			(display "Found committer Claude for commit ")
 			(display (oid->string oid))
