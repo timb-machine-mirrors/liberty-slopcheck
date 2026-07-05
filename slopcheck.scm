@@ -109,10 +109,8 @@ slopcheck [options]
 		 (if (string-contains-ci
 		      body (string-append "Co-authored-by: " name))
 		     (begin
-		       (display "Found co-author ")
-		       (display name)
-		       (display " for commit ")
-		       (display (oid->string oid))
+		       (display
+			(string-append "Found co-author " name " for commit " (oid->string oid)))
 		       (newline))))
 	       '("Copilot" "copilot" "Claude Opus" "Claude Sonnet" "Claude <noreply@anthropic.com>"))
 
