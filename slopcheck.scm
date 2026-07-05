@@ -116,23 +116,13 @@ slopcheck [options]
 		       (newline))))
 	       '("Copilot" "copilot" "Claude Opus" "Claude Sonnet" "Claude <noreply@anthropic.com>"))
 
-	      (if (string-contains-ci body "Assisted-by:")
-		  (begin
-		    (display "Found Assisted-by: for commit ")
-		    (display (oid->string oid))
-		    (newline)))
-
-	      (if (string-contains-ci body "AI-Assisted-By:")
-		  (begin
-		    (display "Found AI-Assisted-By: for commit ")
-		    (display (oid->string oid))
-		    (newline)))
-
-	      (if (string-contains-ci body "Generated-By:")
-		  (begin
-		    (display "Found Generated-By: for commit ")
-		    (display (oid->string oid))
-		    (newline)))
+	      (for-each
+	       (lambda (key)
+		 (if (string-contains-ci body key)
+		     (begin
+		       (display (string-append "Found " key " for commit " (oid->string oid) "\n"))
+		       (newline))))
+	       '("Assisted-by:" "AI-Assisted-By:" "Generated-By"))
 
 	      ;; https://github.com/anthropics/claude-code/issues/69201
 	      (if (string=? author-email "noreply@anthropic.com")
