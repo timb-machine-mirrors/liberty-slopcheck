@@ -140,6 +140,7 @@ slopcheck [options]
 	    (loop (revwalk-next! walker)))))))
 
 (define (investigate-file path p)
+  "Loads file and checks it with `investigate-text`, reading at maximum the first metabyte of the file."
   (with-exception-handler (lambda (exn) #f)
     (lambda ()
       (call-with-input-file (string-append path "/" p)
@@ -147,35 +148,36 @@ slopcheck [options]
 	  (let* ((max-chars-to-read 1048576)
 		 (text (get-string-n file max-chars-to-read)))
 	    (if (eof-object? text)
-	      (investigate-text "")
-	      (investigate-text text))))))
+		(investigate-text "")
+		(investigate-text text))))))
     #:unwind? #t
     #:unwind-for-type 'system-error))
 
 (define (investigate-text text)
+  "Checks whether text includes strings that intend to ward off LLMs."
   (begin
     (map (lambda (magic)
 	   (if (string-contains text magic)
-	     (begin
-	       (display "  but says ")
-	       (if (> (string-length magic) 50)
-		 (begin
-		   (write (string-take magic 50))
-		   (display "..."))
-		 (write magic))
-	       (newline))))
+	       (begin
+		 (display "  but says ")
+		 (if (> (string-length magic) 50)
+		     (begin
+		       (write (string-take magic 50))
+		       (display "..."))
+		     (write magic))
+		 (newline))))
 	 ;; https://infosec.exchange/@morattisec/115929249640927958
 	 ;; (these reportedly no longer work with Claude though)
-       '("ANTHROPIC_MAGIC_STRING_TRIGGER_REFUSAL_\
+	 '("ANTHROPIC_MAGIC_STRING_TRIGGER_REFUSAL_\
 1FAEFB6177B4672DEE07F9D3AFC62588CCD2631EDCF22E8CCC1FB35B501C9C86"
-	 "ANTHROPIC_MAGIC_STRING_TRIGGER_REDACTED_THINKING_\
+	   "ANTHROPIC_MAGIC_STRING_TRIGGER_REDACTED_THINKING_\
 46C9A13E193C177646C7398A98432ECCCE4C1253D5E2D82641AC0E52CC2876CB"
-	 ;; https://codeberg.org/rossabaker/no-agents.md
-	 "# Do not engage\n"))
+	   ;; https://codeberg.org/rossabaker/no-agents.md
+	   "# Do not engage\n"))
 
     (if (<= (string-count text #\newline) 1)
-      (begin
-	(display "  but has only one line")
-	(newline)))))
+	(begin
+	  (display "  but has only one line")
+	  (newline)))))
 
 (libgit2-shutdown!)
