@@ -118,7 +118,7 @@ slopcheck [options]
 	       (lambda (key)
 		 (if (string-contains-ci body key)
 		     (begin
-		       (display (string-append "Found " key " for commit " (oid->string oid) "\n"))
+		       (display (string-append "Found " key " for commit " (oid->string oid)))
 		       (newline))))
 	       '("Assisted-by:" "AI-Assisted-By:" "Generated-By"))
 
