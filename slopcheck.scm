@@ -104,6 +104,7 @@ slopcheck [options]
 		   (committer-email (signature-email committer-sig))
 		   (body (commit-body commit)))
 
+	      ;; Check the Co-authored-by tag for common LLMs.
 	      (for-each
 	       (lambda (name)
 		 (if (string-contains-ci
@@ -122,6 +123,7 @@ slopcheck [options]
 		       (newline))))
 	       '("Assisted-by:" "AI-Assisted-By:" "Generated-By"))
 
+	      ;; Check if Claude is listed as the commit author
 	      ;; https://github.com/anthropics/claude-code/issues/69201
 	      (if (string=? author-email "noreply@anthropic.com")
 		  (if (string-contains-ci author-name "Claude")
