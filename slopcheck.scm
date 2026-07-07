@@ -37,7 +37,7 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
 	    (clone (single-char #\c) (value #t))
 	    (path  (single-char #\p) (value #t))))
 	 (options     (getopt-long args option-spec))
-	 (clone-path  (option-ref options 'clone #f))
+	 (clone-url   (option-ref options 'clone #f))
 	 (local-path  (option-ref options 'path  #f))
 	 (help-chosen (or (option-ref options 'help  #f)
 			  (= 1 (length args)))))
@@ -45,17 +45,17 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
     (cond (help-chosen
 	   (display "\
 slopcheck [options]
-  -h, --help       Display this help message
-  -c, --clone URL  Checks a git repository, cloning into `target`
-  -p, --path PATH  Checks a git repository at a path
+  -h, --help		Display this help message
+  -c, --clone URL	Checks a git repository at URL, clones to `target` by default
+  -p, --path  PATH	Checks a git repository at a path (clones when combined with -c)
 "))
 
-	  (clone-path
+	  (clone-url
 	   (display "Cloning ")
-	   (display clone-path)
+	   (display clone-url)
 	   (newline)
-	   (clone clone-path "target")
-	   (investigate "target"))
+	   (clone clone-url (if local-path local-path "target"))
+	   (investigate investigate local-path))
 
 	  (local-path
 	   (display "Checking repository at: ")
@@ -167,8 +167,7 @@ slopcheck [options]
 	(display " out of ")
 	(display commit-counter)
 	(display " commits")
-	(newline)))
-  )
+	(newline))))
 
 (define (investigate-file path p)
   "Loads file and checks it with `investigate-text`, reading at maximum the first metabyte of the file."
