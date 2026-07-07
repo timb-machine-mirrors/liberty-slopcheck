@@ -112,7 +112,7 @@ slopcheck [options]
 
 	      (set! commit-counter (+ commit-counter 1))
 
-	      ;; Check the Co-authored-by tag for common LLMs.
+	      ;; Check the Co-authored-by trailer for common LLMs.
 	      (for-each
 	       (lambda (name)
 		 (if (string-contains-ci
@@ -125,11 +125,11 @@ slopcheck [options]
 	       '("Copilot" "copilot" "Claude Opus" "Claude Sonnet" "Claude <noreply@anthropic.com>"))
 
 	      (for-each
-	       (lambda (key)
-		 (if (string-contains-ci body key)
+	       (lambda (trailer)
+		 (if (string-contains-ci body trailer)
 		     (begin
 		       (set! found-sign #t)
-		       (display (string-append "Found " key " for commit " (oid->string oid)))
+		       (display (string-append "Found " trailer " for commit " (oid->string oid)))
 		       (newline))))
 	       '("Assisted-by:" "AI-Assisted-By:" "Generated-By"))
 
