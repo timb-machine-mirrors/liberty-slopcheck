@@ -29,6 +29,8 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
 
 (libgit2-init!)
 
+(define signs 0)
+
 (define (main args)
   (let* ((option-spec
 	  '((help  (single-char #\h) (value #f))
@@ -86,6 +88,9 @@ slopcheck [options]
 	 ".claude-plugin"
 	 ".agent"))
 
+  (define sign-counter 0)
+  (define commit-counter 0)
+
   (let* ((repository (repository-open path))
 	 (head       (repository-head repository))
 	 (master-oid (reference-target head))
@@ -93,6 +98,7 @@ slopcheck [options]
 
     (revwalk-push! walker master-oid)
     (let loop ((oid (revwalk-next! walker)))
+      (define found-sign #f)
       (if oid
 	  (begin
 	    (let* ((commit (commit-lookup repository oid))
@@ -104,12 +110,15 @@ slopcheck [options]
 		   (committer-email (signature-email committer-sig))
 		   (body (commit-body commit)))
 
+	      (set! commit-counter (+ commit-counter 1))
+
 	      ;; Check the Co-authored-by tag for common LLMs.
 	      (for-each
 	       (lambda (name)
 		 (if (string-contains-ci
 		      body (string-append "Co-authored-by: " name))
 		     (begin
+		       (set! found-sign #t)
 		       (display
 			(string-append "Found co-author " name " for commit " (oid->string oid)))
 		       (newline))))
@@ -119,6 +128,7 @@ slopcheck [options]
 	       (lambda (key)
 		 (if (string-contains-ci body key)
 		     (begin
+		       (set! found-sign #t)
 		       (display (string-append "Found " key " for commit " (oid->string oid)))
 		       (newline))))
 	       '("Assisted-by:" "AI-Assisted-By:" "Generated-By"))
@@ -128,6 +138,7 @@ slopcheck [options]
 	      (if (string=? author-email "noreply@anthropic.com")
 		  (if (string-contains-ci author-name "Claude")
 		      (begin
+			(set! found-sign #t)
 			(display "Found author Claude for commit ")
 			(display (oid->string oid))
 			(newline))))
@@ -135,11 +146,29 @@ slopcheck [options]
 	      (if (string=? committer-email "noreply@anthropic.com")
 		  (if (string-contains-ci committer-name "Claude")
 		      (begin
+			(set! found-sign #t)
 			(display "Found committer Claude for commit ")
 			(display (oid->string oid))
 			(newline)))))
 
-	    (loop (revwalk-next! walker)))))))
+	    (if found-sign (set! sign-counter (+ sign-counter 1)))
+
+	    (loop (revwalk-next! walker))))))
+
+  (if (eq? sign-counter 0)
+      (begin
+	(display "No LLM signs found in ")
+	(display commit-counter)
+	(display " commits")
+	(newline))
+      (begin
+	(display "Found LLM signs in ")
+	(display sign-counter)
+	(display " out of ")
+	(display commit-counter)
+	(display " commits")
+	(newline)))
+  )
 
 (define (investigate-file path p)
   "Loads file and checks it with `investigate-text`, reading at maximum the first metabyte of the file."
