@@ -35,12 +35,6 @@ Found co-author Copilot for commit xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxz
 
 [Open Slopware](https://codeberg.org/small-hack/open-slopware) is a good place to look for testing this tool.
 
-## Known Issues
-
-- Sometimes terminates with SIGSEGV (Address boundary error) when checking repositories
-- Occasionally drops off the last commit
-- Likely missing some identifiers
-
 ## Future Ideas
 
 - Check individual files for clear signs of LLM-generated code
