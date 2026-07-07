@@ -101,14 +101,14 @@ slopcheck [options]
       (define found-sign #f)
       (if oid
 	  (begin
-	    (let* ((commit (commit-lookup repository oid))
-		   (author-sig (commit-author commit))
-		   (author-name (signature-name author-sig))
-		   (author-email (signature-email author-sig))
-		   (committer-sig (commit-committer commit))
-		   (committer-name (signature-name committer-sig))
-		   (committer-email (signature-email committer-sig))
-		   (body (commit-body commit)))
+	    (let* ((commit          (commit-lookup repository oid))
+		   (body            (commit-body commit))
+		   (author-sig      (commit-author commit))
+		   (author-name     (signature-name author-sig))
+		   (author-email    (signature-email author-sig))
+		   (committer-sig   (commit-committer commit))
+		   (committer-name  (signature-name committer-sig))
+		   (committer-email (signature-email committer-sig)))
 
 	      (set! commit-counter (+ commit-counter 1))
 
