@@ -131,7 +131,7 @@ slopcheck [options]
 		       (set! found-sign #t)
 		       (display (string-append "Found " trailer " for commit " (oid->string oid)))
 		       (newline))))
-	       '("Assisted-by:" "AI-Assisted-By:" "Generated-By"))
+	       '("Assisted-by:" "AI-Assisted-By:" "Generated-By:"))
 
 	      ;; Check if Claude is listed as the commit author
 	      ;; https://github.com/anthropics/claude-code/issues/69201
