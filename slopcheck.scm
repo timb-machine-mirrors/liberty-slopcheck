@@ -44,6 +44,9 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
 (define known-trailers
   '("Assisted-by:" "AI-Assisted-By:" "Generated-By:"))
 
+(define known-ambiguous-trailers
+  '("Co-developed-by: " "Co-authored-by: "))
+
 (define known-paths
   '("AGENTS.md" "CLAUDE.md" ".claude" "llms.txt"
     ".github/copilot-instructions.md"
@@ -134,14 +137,18 @@ slopcheck [options]
                (lambda (lst)
                  (let ((name (car lst))
                        (email (cadr lst)))
-                   (if (and (any (lambda (trailer) (string-contains-ci
-                                             body (string-append trailer name)))
-                                 '("Co-developed-by: " "Co-authored-by: "))
-                            (string-contains-ci
-                             body email))
-                       (begin
-                         (set! found-sign #t)
-                         (format #t "Found co-author ~a for commit ~a\n" name commit-id)))))
+
+                   (for-each
+                    (lambda (trailer)
+                      (if (and (string-contains-ci
+                                body (string-append trailer name))
+                               (string-contains-ci
+                                body email))
+                          (begin
+                            (set! found-sign #t)
+                            (format #t "Found ~a~a for commit ~a\n" trailer name commit-id))
+                          ))
+                    known-ambiguous-trailers)))
                known-author-emails)
 
               ;; Check for trailers only used for LLMs
