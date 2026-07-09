@@ -30,6 +30,32 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
 
 (libgit2-init!)
 
+;; SlopCheck looks for these signs across a repository.
+
+(define known-author-emails
+  '(("Copilot" "198982749+Copilot@users.noreply.github.com")
+    ("Copilot" "175728472+Copilot@users.noreply.github.com")
+    ("Copilot" "")
+    ("Claude"  "noreply@anthropic.com")))
+
+(define known-trailers
+  '("Assisted-by:" "AI-Assisted-By:" "Generated-By:"))
+
+(define known-paths
+  '("AGENTS.md" "CLAUDE.md" ".claude" "llms.txt"
+    ".github/copilot-instructions.md"
+    ".gemini" ".agents" ".llms" ".codex"
+    ;; https://code.claude.com/docs/en/mcp
+    ".mcp.json"
+    ;; https://pypi.org/project/codemcp/
+    "codemcp.toml"
+    ;; https://github.com/gastownhall/beads
+    ".beads"
+    ".claude-plugin"
+    ".agent"))
+
+;; End of signs.
+
 (define (main args)
   (let* ((option-spec
           '((help  (single-char #\h) (value #f))
@@ -72,17 +98,7 @@ slopcheck [options]
                (if (or (string-suffix? ".md" p)
                        (string-suffix? ".txt" p))
                    (investigate-file path p)))))
-       '("AGENTS.md" "CLAUDE.md" ".claude" "llms.txt"
-         ".github/copilot-instructions.md"
-         ".gemini" ".agents" ".llms" ".codex"
-         ;; https://code.claude.com/docs/en/mcp
-         ".mcp.json"
-         ;; https://pypi.org/project/codemcp/
-         "codemcp.toml"
-         ;; https://github.com/gastownhall/beads
-         ".beads"
-         ".claude-plugin"
-         ".agent"))
+       known-paths)
 
   ;; Check for signs of LLMs in commit history
   (define sign-counter 0)
@@ -112,13 +128,17 @@ slopcheck [options]
 
               ;; Check the Co-authored-by trailer for common LLMs.
               (for-each
-               (lambda (name)
-                 (if (string-contains-ci
-                      body (string-append "Co-authored-by: " name))
-                     (begin
-                       (set! found-sign #t)
-                       (format #t "Found co-author ~a for commit ~a\n" name commit-id))))
-               '("Copilot" "copilot" "Claude Opus" "Claude Sonnet" "Claude <noreply@anthropic.com>"))
+               (lambda (lst)
+		 (let ((name (car lst))
+		       (email (cadr lst)))
+                   (if (and (string-contains-ci
+			     body (string-append "Co-authored-by: " name))
+			    (string-contains-ci
+			     body email))
+                       (begin
+			 (set! found-sign #t)
+			 (format #t "Found co-author ~a for commit ~a\n" name commit-id)))))
+               known-author-emails)
 
               ;; Check for trailers only used for LLMs
               (for-each
@@ -127,7 +147,7 @@ slopcheck [options]
                      (begin
                        (set! found-sign #t)
                        (format #t "Found ~a for commit ~a\n" trailer commit-id))))
-               '("Assisted-by:" "AI-Assisted-By:" "Generated-By:"))
+               known-trailers)
 
               ;; Check for commits made directly by LLMs
               (for-each
@@ -147,9 +167,7 @@ slopcheck [options]
                              (set! found-sign #t)
                              (format #t "Found committer ~a for commit ~a\n" name commit-id))))))
 
-               '(("Copilot" "198982749+Copilot@users.noreply.github.com")
-                 ("Copilot" "175728472+Copilot@users.noreply.github.com")
-                 ("Claude"  "noreply@anthropic.com")))
+               known-author-emails)
 
               (if found-sign (set! sign-counter (+ sign-counter 1)))
 
