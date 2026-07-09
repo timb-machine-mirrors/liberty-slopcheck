@@ -34,10 +34,11 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
 ;; SlopCheck looks for these signs across a repository.
 
 (define known-author-emails
-  '(("Copilot" "198982749+Copilot@users.noreply.github.com")
-    ("Copilot" "175728472+Copilot@users.noreply.github.com")
-    ("Copilot" "")
-    ("Claude"  "noreply@anthropic.com")
+  '(("Copilot"      "198982749+Copilot@users.noreply.github.com")
+    ("Copilot"      "223556219+Copilot@users.noreply.github.com")
+    ("Copilot"      "175728472+Copilot@users.noreply.github.com")
+    ("Copilot"      "")
+    ("Claude"       "noreply@anthropic.com")
     ("OpenAI Codex" "codex@openai.com")))
 
 (define known-trailers
@@ -134,8 +135,8 @@ slopcheck [options]
                  (let ((name (car lst))
                        (email (cadr lst)))
                    (if (and (any (lambda (trailer) (string-contains-ci
-					     body (string-append trailer name)))
-				 '("Co-developed-by: " "Co-authored-by: "))
+                                             body (string-append trailer name)))
+                                 '("Co-developed-by: " "Co-authored-by: "))
                             (string-contains-ci
                              body email))
                        (begin
