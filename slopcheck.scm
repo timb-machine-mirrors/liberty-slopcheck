@@ -129,15 +129,15 @@ slopcheck [options]
               ;; Check the Co-authored-by trailer for common LLMs.
               (for-each
                (lambda (lst)
-		 (let ((name (car lst))
-		       (email (cadr lst)))
+                 (let ((name (car lst))
+                       (email (cadr lst)))
                    (if (and (string-contains-ci
-			     body (string-append "Co-authored-by: " name))
-			    (string-contains-ci
-			     body email))
+                             body (string-append "Co-authored-by: " name))
+                            (string-contains-ci
+                             body email))
                        (begin
-			 (set! found-sign #t)
-			 (format #t "Found co-author ~a for commit ~a\n" name commit-id)))))
+                         (set! found-sign #t)
+                         (format #t "Found co-author ~a for commit ~a\n" name commit-id)))))
                known-author-emails)
 
               ;; Check for trailers only used for LLMs
