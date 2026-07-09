@@ -133,6 +133,22 @@ slopcheck [options]
 		       (newline))))
 	       '("Assisted-by:" "AI-Assisted-By:" "Generated-By"))
 
+	      ;; Check if Copilot is listed as the commit author
+	      (if (string=? author-email "198982749+Copilot@users.noreply.github.com")
+		  (if (string-contains-ci author-name "Copilot")
+		      (begin
+			(set! found-sign #t)
+			(display "Found author Copilot for commit ")
+			(display (oid->string oid))
+			(newline))))
+	      (if (string=? author-email "175728472+Copilot@users.noreply.github.com")
+		  (if (string-contains-ci author-name "Copilot")
+		      (begin
+			(set! found-sign #t)
+			(display "Found author Copilot for commit ")
+			(display (oid->string oid))
+			(newline))))
+
 	      ;; Check if Claude is listed as the commit author
 	      ;; https://github.com/anthropics/claude-code/issues/69201
 	      (if (string=? author-email "noreply@anthropic.com")
