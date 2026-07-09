@@ -22,6 +22,7 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
   #:use-module (ice-9 textual-ports)
   #:use-module (ice-9 exceptions)
   #:use-module (ice-9 format)
+  #:use-module (srfi srfi-1)
   #:use-module (git)
   #:use-module (git clone)
   #:use-module (git repository)
@@ -132,8 +133,9 @@ slopcheck [options]
                (lambda (lst)
                  (let ((name (car lst))
                        (email (cadr lst)))
-                   (if (and (string-contains-ci
-                             body (string-append "Co-authored-by: " name))
+                   (if (and (any (lambda (trailer) (string-contains-ci
+					     body (string-append trailer name)))
+				 '("Co-developed-by: " "Co-authored-by: "))
                             (string-contains-ci
                              body email))
                        (begin
