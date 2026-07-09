@@ -29,8 +29,6 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
 
 (libgit2-init!)
 
-(define signs 0)
-
 (define (main args)
   (let* ((option-spec
           '((help  (single-char #\h) (value #f))
@@ -67,6 +65,8 @@ slopcheck [options]
           )))
 
 (define (investigate path)
+  (define signs 0)
+
   (map (lambda (p)
          (if (file-exists? (string-append path "/" p))
              (begin
