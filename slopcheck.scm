@@ -65,8 +65,6 @@ slopcheck [options]
           )))
 
 (define (investigate path)
-  (define signs 0)
-
   (map (lambda (p)
          (if (file-exists? (string-append path "/" p))
              (begin
