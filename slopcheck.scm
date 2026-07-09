@@ -21,6 +21,7 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
   #:use-module (ice-9 getopt-long)
   #:use-module (ice-9 textual-ports)
   #:use-module (ice-9 exceptions)
+  #:use-module (ice-9 format)
   #:use-module (git)
   #:use-module (git clone)
   #:use-module (git repository)
@@ -49,16 +50,12 @@ slopcheck [options]
 "))
 
           (clone-url
-           (display "Cloning ")
-           (display clone-url)
-           (newline)
+	   (format #t "Cloning ~a\n" clone-url)
            (clone clone-url (if local-path local-path "target"))
            (investigate investigate local-path))
 
           (local-path
-           (display "Checking repository at: ")
-           (display local-path)
-           (newline)
+	   (format #t "Checking repository at: ~a\n" local-path)
            (if (file-exists? local-path)
                (investigate local-path)
                (display "Path does not exist\n")))
@@ -117,9 +114,7 @@ slopcheck [options]
                       body (string-append "Co-authored-by: " name))
                      (begin
                        (set! found-sign #t)
-                       (display
-                        (string-append "Found co-author " name " for commit " (oid->string oid)))
-                       (newline))))
+		       (format #t "Found co-author ~a for commit ~a\n" name (oid->string oid)))))
                '("Copilot" "copilot" "Claude Opus" "Claude Sonnet" "Claude <noreply@anthropic.com>"))
 
               (for-each
@@ -127,8 +122,7 @@ slopcheck [options]
                  (if (string-contains-ci body trailer)
                      (begin
                        (set! found-sign #t)
-                       (display (string-append "Found " trailer " for commit " (oid->string oid)))
-                       (newline))))
+		       (format #t "Found ~a for commit ~a\n" trailer (oid->string oid)))))
                '("Assisted-by:" "AI-Assisted-By:" "Generated-By:"))
 
               (for-each
@@ -140,21 +134,13 @@ slopcheck [options]
                        (if (string-contains-ci author-name name)
                            (begin
                              (set! found-sign #t)
-                             (display "Found author ")
-                             (display name)
-                             (display " for commit ")
-                             (display (oid->string oid))
-                             (newline))))
+			     (format #t "Found author ~a for commit ~a\n" name (oid->string oid)))))
 
                    (if (string=? committer-email email)
                        (if (string-contains-ci committer-name name)
                            (begin
                              (set! found-sign #t)
-                             (display "Found committer ")
-                             (display name)
-                             (display " for commit ")
-                             (display (oid->string oid))
-                             (newline))))))
+			     (format #t "Found committer ~a for commit ~a\n" name (oid->string oid)))))))
 
                '(("Copilot" "198982749+Copilot@users.noreply.github.com")
                  ("Copilot" "175728472+Copilot@users.noreply.github.com")
@@ -165,18 +151,8 @@ slopcheck [options]
               (loop (revwalk-next! walker)))))))
 
   (if (eq? sign-counter 0)
-      (begin
-        (display "No LLM signs found in ")
-        (display commit-counter)
-        (display " commits")
-        (newline))
-      (begin
-        (display "Found LLM signs in ")
-        (display sign-counter)
-        (display " out of ")
-        (display commit-counter)
-        (display " commits")
-        (newline))))
+      (format #t "No LLM signs found in ~a commits\n" commit-counter)
+      (format #t "Found LLM signs in ~a out of ~a commits\n" sign-counter commit-counter)))
 
 (define (investigate-file path p)
   "Loads file and checks it with `investigate-text`, reading at maximum the first metabyte of the file."
