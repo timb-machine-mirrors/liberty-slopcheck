@@ -62,6 +62,7 @@ slopcheck [options]
           )))
 
 (define (investigate path)
+  ;; Check for files that suggest LLM usage
   (map (lambda (p)
          (if (file-exists? (string-append path "/" p))
              (begin
@@ -83,6 +84,7 @@ slopcheck [options]
          ".claude-plugin"
          ".agent"))
 
+  ;; Check for signs of LLMs in commit history
   (define sign-counter 0)
   (define commit-counter 0)
 
@@ -97,6 +99,7 @@ slopcheck [options]
       (if oid
           (begin
             (let* ((commit          (commit-lookup repository oid))
+                   (commit-id       (oid->string oid))
                    (body            (commit-body commit))
                    (author-sig      (commit-author commit))
                    (author-name     (signature-name author-sig))
@@ -114,17 +117,19 @@ slopcheck [options]
                       body (string-append "Co-authored-by: " name))
                      (begin
                        (set! found-sign #t)
-                       (format #t "Found co-author ~a for commit ~a\n" name (oid->string oid)))))
+                       (format #t "Found co-author ~a for commit ~a\n" name commit-id))))
                '("Copilot" "copilot" "Claude Opus" "Claude Sonnet" "Claude <noreply@anthropic.com>"))
 
+              ;; Check for trailers only used for LLMs
               (for-each
                (lambda (trailer)
                  (if (string-contains-ci body trailer)
                      (begin
                        (set! found-sign #t)
-                       (format #t "Found ~a for commit ~a\n" trailer (oid->string oid)))))
+                       (format #t "Found ~a for commit ~a\n" trailer commit-id))))
                '("Assisted-by:" "AI-Assisted-By:" "Generated-By:"))
 
+              ;; Check for commits made directly by LLMs
               (for-each
                (lambda (lst)
                  (let ((name (car lst))
@@ -134,13 +139,13 @@ slopcheck [options]
                        (if (string-contains-ci author-name name)
                            (begin
                              (set! found-sign #t)
-                             (format #t "Found author ~a for commit ~a\n" name (oid->string oid)))))
+                             (format #t "Found author ~a for commit ~a\n" name commit-id))))
 
                    (if (string=? committer-email email)
                        (if (string-contains-ci committer-name name)
                            (begin
                              (set! found-sign #t)
-                             (format #t "Found committer ~a for commit ~a\n" name (oid->string oid)))))))
+                             (format #t "Found committer ~a for commit ~a\n" name commit-id))))))
 
                '(("Copilot" "198982749+Copilot@users.noreply.github.com")
                  ("Copilot" "175728472+Copilot@users.noreply.github.com")
@@ -154,14 +159,13 @@ slopcheck [options]
       (format #t "No LLM signs found in ~a commits\n" commit-counter)
       (format #t "Found LLM signs in ~a out of ~a commits\n" sign-counter commit-counter)))
 
-(define (investigate-file path p)
+(define (investigate-file path name)
   "Loads file and checks it with `investigate-text`, reading at maximum the first metabyte of the file."
   (with-exception-handler (lambda (exn) #f)
     (lambda ()
-      (call-with-input-file (string-append path "/" p)
+      (call-with-input-file (string-append path "/" name)
         (lambda (file)
-          (let* ((max-chars-to-read 1048576)
-                 (text (get-string-n file max-chars-to-read)))
+          (let* ((text (get-string-n file 1048576))) ; 1MB (2^20)
             (if (eof-object? text)
                 (investigate-text "")
                 (investigate-text text))))))
