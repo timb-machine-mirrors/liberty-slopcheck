@@ -133,43 +133,38 @@ slopcheck [options]
 		       (newline))))
 	       '("Assisted-by:" "AI-Assisted-By:" "Generated-By:"))
 
-	      ;; Check if Copilot is listed as the commit author
-	      (if (string=? author-email "198982749+Copilot@users.noreply.github.com")
-		  (if (string-contains-ci author-name "Copilot")
-		      (begin
-			(set! found-sign #t)
-			(display "Found author Copilot for commit ")
-			(display (oid->string oid))
-			(newline))))
-	      (if (string=? author-email "175728472+Copilot@users.noreply.github.com")
-		  (if (string-contains-ci author-name "Copilot")
-		      (begin
-			(set! found-sign #t)
-			(display "Found author Copilot for commit ")
-			(display (oid->string oid))
-			(newline))))
+	      (for-each
+	       (lambda (lst)
+		 (let ((name (car lst))
+		       (email (cadr lst)))
 
-	      ;; Check if Claude is listed as the commit author
-	      ;; https://github.com/anthropics/claude-code/issues/69201
-	      (if (string=? author-email "noreply@anthropic.com")
-		  (if (string-contains-ci author-name "Claude")
-		      (begin
-			(set! found-sign #t)
-			(display "Found author Claude for commit ")
-			(display (oid->string oid))
-			(newline))))
+		   (if (string=? author-email email)
+		       (if (string-contains-ci author-name name)
+			   (begin
+			     (set! found-sign #t)
+			     (display "Found author ")
+			     (display name)
+			     (display " for commit ")
+			     (display (oid->string oid))
+			     (newline))))
 
-	      (if (string=? committer-email "noreply@anthropic.com")
-		  (if (string-contains-ci committer-name "Claude")
-		      (begin
-			(set! found-sign #t)
-			(display "Found committer Claude for commit ")
-			(display (oid->string oid))
-			(newline)))))
+		   (if (string=? committer-email email)
+		       (if (string-contains-ci committer-name name)
+			   (begin
+			     (set! found-sign #t)
+			     (display "Found committer ")
+			     (display name)
+			     (display " for commit ")
+			     (display (oid->string oid))
+			     (newline))))))
 
-	    (if found-sign (set! sign-counter (+ sign-counter 1)))
+	       '(("Copilot" "198982749+Copilot@users.noreply.github.com")
+		 ("Copilot" "175728472+Copilot@users.noreply.github.com")
+		 ("Claude"  "noreply@anthropic.com")))
 
-	    (loop (revwalk-next! walker))))))
+	      (if found-sign (set! sign-counter (+ sign-counter 1)))
+
+	      (loop (revwalk-next! walker)))))))
 
   (if (eq? sign-counter 0)
       (begin
