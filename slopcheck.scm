@@ -50,12 +50,12 @@ slopcheck [options]
 "))
 
           (clone-url
-	   (format #t "Cloning ~a\n" clone-url)
+           (format #t "Cloning ~a\n" clone-url)
            (clone clone-url (if local-path local-path "target"))
            (investigate investigate local-path))
 
           (local-path
-	   (format #t "Checking repository at: ~a\n" local-path)
+           (format #t "Checking repository at: ~a\n" local-path)
            (if (file-exists? local-path)
                (investigate local-path)
                (display "Path does not exist\n")))
@@ -114,7 +114,7 @@ slopcheck [options]
                       body (string-append "Co-authored-by: " name))
                      (begin
                        (set! found-sign #t)
-		       (format #t "Found co-author ~a for commit ~a\n" name (oid->string oid)))))
+                       (format #t "Found co-author ~a for commit ~a\n" name (oid->string oid)))))
                '("Copilot" "copilot" "Claude Opus" "Claude Sonnet" "Claude <noreply@anthropic.com>"))
 
               (for-each
@@ -122,7 +122,7 @@ slopcheck [options]
                  (if (string-contains-ci body trailer)
                      (begin
                        (set! found-sign #t)
-		       (format #t "Found ~a for commit ~a\n" trailer (oid->string oid)))))
+                       (format #t "Found ~a for commit ~a\n" trailer (oid->string oid)))))
                '("Assisted-by:" "AI-Assisted-By:" "Generated-By:"))
 
               (for-each
@@ -134,13 +134,13 @@ slopcheck [options]
                        (if (string-contains-ci author-name name)
                            (begin
                              (set! found-sign #t)
-			     (format #t "Found author ~a for commit ~a\n" name (oid->string oid)))))
+                             (format #t "Found author ~a for commit ~a\n" name (oid->string oid)))))
 
                    (if (string=? committer-email email)
                        (if (string-contains-ci committer-name name)
                            (begin
                              (set! found-sign #t)
-			     (format #t "Found committer ~a for commit ~a\n" name (oid->string oid)))))))
+                             (format #t "Found committer ~a for commit ~a\n" name (oid->string oid)))))))
 
                '(("Copilot" "198982749+Copilot@users.noreply.github.com")
                  ("Copilot" "175728472+Copilot@users.noreply.github.com")
