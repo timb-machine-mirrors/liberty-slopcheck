@@ -132,7 +132,7 @@ slopcheck [options]
 
               (set! commit-counter (+ commit-counter 1))
 
-              ;; Check the Co-authored-by trailer for common LLMs.
+              ;; Check the Co-authored-by and Co-developed-by trailers
               (for-each
                (lambda (lst)
                  (let ((name (car lst))
