@@ -24,4 +24,4 @@ Positive signs:
   `agent-names`
 
 Negative signs:
-- Putting non-LLM tools as commit contributors (e.g. GoToSocial's `Assisted-by Assisted-by: GNU sed 4.10 <sed@gnu.org>`)
+- Putting non-LLM tools as commit contributors (e.g. GoToSocial's `Assisted-by: GNU sed 4.10 <sed@gnu.org>`)
