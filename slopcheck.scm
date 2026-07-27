@@ -132,7 +132,10 @@ slopcheck [options]
           (do ((oid (revwalk-next! walker) (revwalk-next! walker))
                (commit-counter 0 (+ commit-counter 1))
                (sign-counter 0 (if found-sign (+ sign-counter 1) sign-counter)))
-              ((not oid) (values sign-counter commit-counter))
+              ((or (not oid)
+                   ;; 30 November 2022.
+                   (> 1669766400 (commit-time (commit-lookup repository oid))))
+               (values sign-counter commit-counter))
 
             (set! found-sign #f)
 
