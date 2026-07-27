@@ -84,7 +84,7 @@ slopcheck [options]
 "))
 
           (clone-url
-	   (let ((path (if local-path local-path "target")))
+           (let ((path (if local-path local-path "target")))
              (format #t "Cloning ~a into ~a\n" clone-url path)
              (clone clone-url path)
              (investigate path)))
@@ -185,9 +185,9 @@ slopcheck [options]
 
                known-author-emails)))))
 
-        (if (eq? sign-counter 0)
-            (format #t "No LLM signs found in ~a commits\n" commit-counter)
-            (format #t "Found LLM signs in ~a out of ~a commits\n" sign-counter commit-counter)))))
+      (if (eq? sign-counter 0)
+          (format #t "No LLM signs found in ~a commits\n" commit-counter)
+          (format #t "Found LLM signs in ~a out of ~a commits\n" sign-counter commit-counter)))))
 
 (define (investigate-file path name)
   "Loads file and checks it with `investigate-text`, reading at maximum the first metabyte of the file."
