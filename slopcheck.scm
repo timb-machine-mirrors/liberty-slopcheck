@@ -122,7 +122,7 @@ slopcheck [options]
           (do ((oid (revwalk-next! walker) (revwalk-next! walker))
                (commit-counter 0 (+ commit-counter 1))
                (sign-counter 0 (if found-sign (+ sign-counter 1) sign-counter)))
-              ((or (not oid) (>= commit-counter 5000)) (values sign-counter commit-counter))
+              ((not oid) (values sign-counter commit-counter))
 
             (set! found-sign #f)
 
