@@ -84,9 +84,10 @@ slopcheck [options]
 "))
 
           (clone-url
-           (format #t "Cloning ~a\n" clone-url)
-           (clone clone-url (if local-path local-path "target"))
-           (investigate investigate local-path))
+	   (let ((path (if local-path local-path "target")))
+             (format #t "Cloning ~a into ~a\n" clone-url path)
+             (clone clone-url path)
+             (investigate path)))
 
           (local-path
            (format #t "Checking repository at: ~a\n" local-path)
