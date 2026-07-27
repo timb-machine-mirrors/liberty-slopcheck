@@ -39,6 +39,7 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
     ("Copilot"      "223556219+Copilot@users.noreply.github.com")
     ("Copilot"      "175728472+Copilot@users.noreply.github.com")
     ("Copilot"      "")
+    ("gpt"          "")
     ("Claude"       "noreply@anthropic.com")
     ("OpenAI Codex" "codex@openai.com")))
 
