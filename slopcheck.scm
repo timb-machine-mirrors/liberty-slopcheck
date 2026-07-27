@@ -41,6 +41,7 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
     ("Copilot"      "")
     ("gpt"          "")
     ("Claude"       "noreply@anthropic.com")
+    ("Claude"       "claude@anthropic.com")
     ("OpenAI"       "codex@openai.com")
     ("Amp"          "amp@ampcode.com")
     ("ampagent"     "amp@ampcode.com")
