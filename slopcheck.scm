@@ -23,6 +23,7 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
   #:use-module (ice-9 exceptions)
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (git)
   #:use-module (git clone)
   #:use-module (git repository)
@@ -107,19 +108,23 @@ slopcheck [options]
        known-paths)
 
   ;; Check for signs of LLMs in commit history
-  (define sign-counter 0)
-  (define commit-counter 0)
-
   (let* ((repository (repository-open path))
          (head       (repository-head repository))
          (master-oid (reference-target head))
          (walker     (revwalk-new repository)))
 
+    (define found-sign #f)
     (revwalk-push! walker master-oid)
-    (let loop ((oid (revwalk-next! walker)))
-      (define found-sign #f)
-      (if oid
-          (begin
+
+    (let-values
+        (((sign-counter commit-counter)
+          (do ((oid (revwalk-next! walker) (revwalk-next! walker))
+               (commit-counter 0 (+ commit-counter 1))
+               (sign-counter 0 (if found-sign (+ sign-counter 1) sign-counter)))
+              ((or (not oid) (>= commit-counter 5000)) (values sign-counter commit-counter))
+
+            (set! found-sign #f)
+
             (let* ((commit          (commit-lookup repository oid))
                    (commit-id       (oid->string oid))
                    (body            (commit-body commit))
@@ -129,8 +134,6 @@ slopcheck [options]
                    (committer-sig   (commit-committer commit))
                    (committer-name  (signature-name committer-sig))
                    (committer-email (signature-email committer-sig)))
-
-              (set! commit-counter (+ commit-counter 1))
 
               ;; Check the Co-authored-by and Co-developed-by trailers
               (for-each
@@ -178,15 +181,11 @@ slopcheck [options]
                              (set! found-sign #t)
                              (format #t "Found committer ~a for commit ~a\n" name commit-id))))))
 
-               known-author-emails)
+               known-author-emails)))))
 
-              (if found-sign (set! sign-counter (+ sign-counter 1)))
-
-              (loop (revwalk-next! walker)))))))
-
-  (if (eq? sign-counter 0)
-      (format #t "No LLM signs found in ~a commits\n" commit-counter)
-      (format #t "Found LLM signs in ~a out of ~a commits\n" sign-counter commit-counter)))
+        (if (eq? sign-counter 0)
+            (format #t "No LLM signs found in ~a commits\n" commit-counter)
+            (format #t "Found LLM signs in ~a out of ~a commits\n" sign-counter commit-counter)))))
 
 (define (investigate-file path name)
   "Loads file and checks it with `investigate-text`, reading at maximum the first metabyte of the file."
