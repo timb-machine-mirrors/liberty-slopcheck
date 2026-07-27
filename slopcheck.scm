@@ -128,14 +128,19 @@ slopcheck [options]
     (revwalk-push! walker master-oid)
 
     (let-values
-        (((sign-counter commit-counter)
+        (((sign-counter commit-counter last-clean)
           (do ((oid (revwalk-next! walker) (revwalk-next! walker))
                (commit-counter 0 (+ commit-counter 1))
-               (sign-counter 0 (if found-sign (+ sign-counter 1) sign-counter)))
+               (sign-counter 0 (if found-sign (+ sign-counter 1) sign-counter))
+               (last-clean #f (cond (found-sign #f)
+                                    ((and (not last-clean) (not found-sign))
+                                     (oid->string (commit-id (commit-lookup repository oid))))
+                                    (else last-clean)
+)))
               ((or (not oid)
                    ;; 30 November 2022.
                    (> 1669766400 (commit-time (commit-lookup repository oid))))
-               (values sign-counter commit-counter))
+               (values sign-counter commit-counter last-clean))
 
             (set! found-sign #f)
 
@@ -199,7 +204,7 @@ slopcheck [options]
 
       (if (eq? sign-counter 0)
           (format #t "No LLM signs found in ~a commits\n" commit-counter)
-          (format #t "Found LLM signs in ~a out of ~a commits\n" sign-counter commit-counter)))))
+          (format #t "Found LLM signs in ~a out of ~a commits\nLast clean commit might be ~a\n" sign-counter commit-counter last-clean)))))
 
 (define (investigate-file path name)
   "Loads file and checks it with `investigate-text`, reading at maximum the first metabyte of the file."
