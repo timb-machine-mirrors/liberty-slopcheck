@@ -41,7 +41,16 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
     ("Copilot"      "")
     ("gpt"          "")
     ("Claude"       "noreply@anthropic.com")
-    ("OpenAI Codex" "codex@openai.com")))
+    ("OpenAI"       "codex@openai.com")
+    ("Amp"          "amp@ampcode.com")
+    ("ampagent"     "amp@ampcode.com")
+    ("Cursor"       "cursoragent@cursor.com")
+    ("coderabbit"   "coderabbit.ai")
+    (""             "devin.ai")
+    ("aider"        "aider.chat")
+    ("tabnine"      "tabnine.com")
+    ("Cline"        "cline.bot")
+    ("Cline"        "205137888+cline[bot]@users.noreply.github.com")))
 
 (define known-trailers
   '("AI-Assisted-By:" "Generated-By:"))
