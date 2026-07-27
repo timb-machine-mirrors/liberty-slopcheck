@@ -43,10 +43,10 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
     ("OpenAI Codex" "codex@openai.com")))
 
 (define known-trailers
-  '("Assisted-by:" "AI-Assisted-By:" "Generated-By:"))
+  '("AI-Assisted-By:" "Generated-By:"))
 
 (define known-ambiguous-trailers
-  '("Co-developed-by: " "Co-authored-by: "))
+  '("Co-developed-by: " "Co-authored-by: " "Assisted-by: "))
 
 (define known-paths
   '("AGENTS.md" "CLAUDE.md" ".claude" "llms.txt"
