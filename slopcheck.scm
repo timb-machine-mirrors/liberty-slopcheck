@@ -30,8 +30,6 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
   #:use-module (git revwalker)
   #:export (main))
 
-(libgit2-init!)
-
 ;; SlopCheck looks for these signs across a repository.
 
 (define known-author-emails
@@ -98,6 +96,8 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
          (help-chosen (or (option-ref options 'help  #f)
                           (= 1 (length args)))))
 
+    (libgit2-init!)
+
     (cond (help-chosen
            (display "\
 slopcheck [options]
@@ -116,8 +116,9 @@ slopcheck [options]
            (format #t "Checking repository at: ~a\n" local-path)
            (if (file-exists? local-path)
                (investigate local-path)
-               (display "Path does not exist\n")))
-          )))
+               (display "Path does not exist\n"))))
+
+    (libgit2-shutdown!)))
 
 (define (investigate path)
   ;; Check for files that suggest LLM usage
@@ -252,5 +253,3 @@ slopcheck [options]
         (begin
           (display "  but has only one line")
           (newline)))))
-
-(libgit2-shutdown!)
