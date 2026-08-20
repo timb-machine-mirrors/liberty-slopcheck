@@ -1,4 +1,4 @@
-# SlopCheck
+# SlopCheck [![Delightful Humane Tech](https://codeberg.org/delightful-commons/delightful-humane-design/raw/branch/main/humane-tech-badge.svg)](https://codeberg.org/delightful-commons/delightful-humane-design)
 
 Check for signs of LLM agents in git repositories.
 
