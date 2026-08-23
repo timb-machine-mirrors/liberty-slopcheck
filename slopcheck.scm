@@ -222,7 +222,7 @@ slopcheck [options]
           (format #t "Found LLM signs in ~a out of ~a commits\nLast clean commit might be ~a\n" sign-counter commit-counter last-clean)))))
 
 (define (investigate-file path name)
-  "Loads file and checks it with `investigate-text`, reading at maximum the first metabyte of the file."
+  "Loads file and checks it with `investigate-text`, reading at maximum the first megabyte of the file."
   (with-exception-handler (lambda (exn) #f)
     (lambda ()
       (call-with-input-file (string-append path "/" name)
