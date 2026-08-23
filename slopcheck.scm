@@ -97,6 +97,7 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
                           (= 1 (length args)))))
 
     (libgit2-init!)
+    (define exit-status 1)
 
     (cond (help-chosen
            (display "\
@@ -110,15 +111,24 @@ slopcheck [options]
            (let ((path (if local-path local-path "target")))
              (format #t "Cloning ~a into ~a\n" clone-url path)
              (clone clone-url path)
-             (investigate path)))
+             (set! exit-status (investigate path))))
 
           (local-path
            (format #t "Checking repository at: ~a\n" local-path)
            (if (file-exists? local-path)
-               (investigate local-path)
+               (set! exit-status (investigate local-path))
                (display "Path does not exist\n"))))
 
-    (libgit2-shutdown!)))
+    (libgit2-shutdown!)
+
+    ;; POSIX.1-2024 (https://pubs.opengroup.org/onlinepubs/9799919799/)
+    ;; says, "Calling exit() with a value greater than 255 or less than 0 is
+    ;; something that only programs which are specifically designed to have
+    ;; their exit status obtained by waitid() should do (since it does not
+    ;; truncate the exit status to 8 bits)."
+    (if (> exit-status 255)
+       (set! exit-status 255))
+    (exit exit-status)))
 
 (define (investigate path)
   "Checks repository at given path, and returns the number of positive signs."
