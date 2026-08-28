@@ -97,6 +97,7 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
                           (= 1 (length args)))))
 
     (libgit2-init!)
+    (define exit-status 1)
 
     (cond (help-chosen
            (display "\
@@ -110,19 +111,32 @@ slopcheck [options]
            (let ((path (if local-path local-path "target")))
              (format #t "Cloning ~a into ~a\n" clone-url path)
              (clone clone-url path)
-             (investigate path)))
+             (set! exit-status (investigate path))))
 
           (local-path
            (format #t "Checking repository at: ~a\n" local-path)
            (if (file-exists? local-path)
-               (investigate local-path)
+               (set! exit-status (investigate local-path))
                (display "Path does not exist\n"))))
 
-    (libgit2-shutdown!)))
+    (libgit2-shutdown!)
+
+    ;; POSIX.1-2024 (https://pubs.opengroup.org/onlinepubs/9799919799/)
+    ;; says, "Calling exit() with a value greater than 255 or less than 0 is
+    ;; something that only programs which are specifically designed to have
+    ;; their exit status obtained by waitid() should do (since it does not
+    ;; truncate the exit status to 8 bits)."
+    (if (> exit-status 255)
+       (set! exit-status 255))
+    (exit exit-status)))
 
 (define (investigate path)
+  "Checks repository at given path, and returns the number of positive signs."
+
   ;; Check for files that suggest LLM usage
-  (map (lambda (p)
+  (define file-sign-counter
+    (count
+       (lambda (p)
          (if (file-exists? (string-append path "/" p))
              (begin
                (display p)
@@ -130,8 +144,10 @@ slopcheck [options]
                (newline)
                (if (or (string-suffix? ".md" p)
                        (string-suffix? ".txt" p))
-                   (investigate-file path p)))))
-       known-paths)
+                   (not (investigate-file path p))
+                   #t))
+             #f))
+       known-paths))
 
   ;; Check for signs of LLMs in commit history
   (let* ((repository (repository-open path))
@@ -143,10 +159,10 @@ slopcheck [options]
     (revwalk-push! walker master-oid)
 
     (let-values
-        (((sign-counter commit-counter last-clean)
+        (((commit-sign-counter commit-counter last-clean)
           (do ((oid (revwalk-next! walker) (revwalk-next! walker))
                (commit-counter 0 (+ commit-counter 1))
-               (sign-counter 0 (if found-sign (+ sign-counter 1) sign-counter))
+               (commit-sign-counter 0 (if found-sign (+ commit-sign-counter 1) commit-sign-counter))
                (last-clean #f (cond (found-sign #f)
                                     ((and (not last-clean) (not found-sign))
                                      (oid->string (commit-id (commit-lookup repository oid))))
@@ -155,7 +171,7 @@ slopcheck [options]
               ((or (not oid)
                    ;; 30 November 2022.
                    (> 1669766400 (commit-time (commit-lookup repository oid))))
-               (values sign-counter commit-counter last-clean))
+               (values commit-sign-counter commit-counter last-clean))
 
             (set! found-sign #f)
 
@@ -217,13 +233,20 @@ slopcheck [options]
 
                known-author-emails)))))
 
-      (if (eq? sign-counter 0)
+      (if (eq? commit-sign-counter 0)
           (format #t "No LLM signs found in ~a commits\n" commit-counter)
-          (format #t "Found LLM signs in ~a out of ~a commits\nLast clean commit might be ~a\n" sign-counter commit-counter last-clean)))))
+          (format #t "Found LLM signs in ~a out of ~a commits\nLast clean commit might be ~a\n"
+                     commit-sign-counter commit-counter last-clean))
+
+      (+ file-sign-counter commit-sign-counter))))
 
 (define (investigate-file path name)
-  "Loads file and checks it with `investigate-text`, reading at maximum the first metabyte of the file."
-  (with-exception-handler (lambda (exn) #f)
+  "Loads file and checks it with `investigate-text`, reading at maximum the first megabyte of the file."
+  (with-exception-handler
+    (lambda (exn)
+      (begin
+        (display "  but is unreadable\n")
+        #t))
     (lambda ()
       (call-with-input-file (string-append path "/" name)
         (lambda (file)
@@ -237,6 +260,8 @@ slopcheck [options]
 (define (investigate-text text)
   "Checks whether text includes strings that intend to ward off LLMs."
   (begin
+    (define found-negative-sign #f)
+
     (map (lambda (magic)
            (if (string-contains text magic)
                (begin
@@ -246,10 +271,14 @@ slopcheck [options]
                        (write (string-take magic 50))
                        (display "..."))
                      (write magic))
-                 (newline))))
+                 (newline)
+                 (set! found-negative-sign #t))))
          known-deny-strings)
 
     (if (<= (string-count text #\newline) 1)
         (begin
           (display "  but has only one line")
-          (newline)))))
+          (newline)
+          (set! found-negative-sign #t)))
+
+    found-negative-sign))
