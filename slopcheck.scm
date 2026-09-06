@@ -22,6 +22,7 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
   #:use-module (ice-9 textual-ports)
   #:use-module (ice-9 exceptions)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 ftw)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (git)
@@ -130,6 +131,17 @@ slopcheck [options]
        (set! exit-status 255))
     (exit exit-status)))
 
+(define-syntax-rule (selfcheck-license expr-if-licensed)
+  "Checks whether this program is accompanied by an expected software license text file (COPYING*).
+   If such a file exists, evaluates the given expression."
+
+  (let ((self-path (dirname (current-filename))))
+    (if
+      (null? (scandir self-path
+                      (lambda (dir-ent) (string-prefix? "COPYING" dir-ent))))
+      (format #t "Missing license file in ~a\n" self-path)
+      expr-if-licensed)))
+
 (define (investigate path)
   "Checks repository at given path, and returns the number of positive signs."
 
@@ -160,7 +172,7 @@ slopcheck [options]
 
     (let-values
         (((commit-sign-counter commit-counter last-clean)
-          (do ((oid (revwalk-next! walker) (revwalk-next! walker))
+          (do ((oid (selfcheck-license (revwalk-next! walker)) (revwalk-next! walker))
                (commit-counter 0 (+ commit-counter 1))
                (commit-sign-counter 0 (if found-sign (+ commit-sign-counter 1) commit-sign-counter))
                (last-clean #f (cond (found-sign #f)
