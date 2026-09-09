@@ -60,7 +60,15 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
     ))
 
 (define known-trailers
-  '("AI-Assisted-By:" "Generated-By:" "X-AI-Gen:" "X-AI-Model:" "X-Claude-User:" "X-Claude-User-Id:" "X-Claude-Code-Session-Id:"))
+  '("AI-Assisted-By:"
+    "Generated-By:"
+    "X-AI-Gen:"
+    "X-AI-Model:"
+    "X-Claude-User:"
+    "X-Claude-User-Id:"
+    "X-Claude-Code-Session-Id:"
+    "Claude-Session:"
+    ))
 
 (define known-ambiguous-trailers
   '("Co-developed-by: " "Co-authored-by: " "Assisted-by: " "Signed-off-by: "))
