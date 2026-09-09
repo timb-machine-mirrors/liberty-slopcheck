@@ -69,8 +69,10 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
     ("deepseek-flash"      "")
     ("DeepSeek-V4"         "")
     ("DeepSeek"            "")
-    ("Perplexity Computer"  "assistant@perplexity.ai")
-    ("Perplexity AI"        "ai@perplexity.ai")
+    ("Perplexity Computer" "assistant@perplexity.ai")
+    ("Perplexity AI"       "ai@perplexity.ai")
+    ("Grok"                "noreply@x.ai")
+    ("Grok"                "grok@x.ai")
     ))
 
 (define known-trailers
