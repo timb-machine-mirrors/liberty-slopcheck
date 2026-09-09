@@ -78,6 +78,8 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
     ("Codebuff"            "noreply@codebuff.com")
     ("Sourcegraph"         "batch-changes@sourcegraph.com")
     ("Buildkite"           "buildkite@sourcegraph.com")
+    ("Hermes Agent"        "agent@nousresearch.com")
+    ("Hermes Agent"        "hermes-agent@nousresearch.com")
     ))
 
 (define known-trailers
