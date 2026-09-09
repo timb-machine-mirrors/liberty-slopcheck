@@ -73,6 +73,7 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
     ("Perplexity AI"       "ai@perplexity.ai")
     ("Grok"                "noreply@x.ai")
     ("Grok"                "grok@x.ai")
+    ("Mistral Vibe"        "vibe@mistral.ai")
     ))
 
 (define known-trailers
