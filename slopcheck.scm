@@ -76,6 +76,8 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
     ("Grok"                "grok@x.ai")
     ("Mistral Vibe"        "vibe@mistral.ai")
     ("Codebuff"            "noreply@codebuff.com")
+    ("Sourcegraph"         "batch-changes@sourcegraph.com")
+    ("Buildkite"           "buildkite@sourcegraph.com")
     ))
 
 (define known-trailers
