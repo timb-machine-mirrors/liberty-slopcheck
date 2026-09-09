@@ -63,7 +63,7 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
   '("AI-Assisted-By:" "Generated-By:"))
 
 (define known-ambiguous-trailers
-  '("Co-developed-by: " "Co-authored-by: " "Assisted-by: "))
+  '("Co-developed-by: " "Co-authored-by: " "Assisted-by: " "Signed-off-by: "))
 
 (define known-paths
   '("AGENTS.md" "CLAUDE.md" ".claude" "llms.txt"
