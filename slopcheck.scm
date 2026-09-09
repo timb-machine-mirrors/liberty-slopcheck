@@ -52,6 +52,7 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
     ("coderabbitai[bot]"   "")
     ("cloud-code-bot[bot]" "234529496+cloud-code-bot[bot]@users.noreply.github.com")
     ("cloud-code-bot[bot]" "")
+    ("Devin AI"            "158243242+devin-ai-integration[bot]@users.noreply.github.com")
     (""                    "devin.ai")
     ("aider"               "aider.chat")
     ("tabnine"             "tabnine.com")
