@@ -132,8 +132,10 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
          (options     (getopt-long args option-spec))
          (clone-url   (option-ref options 'clone #f))
          (local-path  (option-ref options 'path  #f))
+         (non-options (option-ref options '()    '()))
          (help-chosen (or (option-ref options 'help  #f)
-                          (= 1 (length args)))))
+                          (not (null? non-options))
+                          (and (not clone-url) (not local-path)))))
 
     (libgit2-init!)
     (define exit-status 1)
