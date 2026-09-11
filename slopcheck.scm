@@ -66,7 +66,7 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
     ("cubic-dev-ai[bot]"   "191113872+cubic-dev-ai[bot]@users.noreply.github.com")
     ("greptile-apps[bot]"  "165735046+greptile-apps[bot]@users.noreply.github.com")
     ("Junie The Developer" "junie-live-agent@users.noreply.github.com")
-    ("Junie"               "junie@jetbrains.com)
+    ("Junie"               "junie@jetbrains.com")
     ("Warp"                "agent@warp.dev")
     ("warp-for-oss[bot]"   "277970191+warp-for-oss[bot]@users.noreply.github.com")
     (""                    "ai@local")
