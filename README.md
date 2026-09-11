@@ -9,7 +9,7 @@ SlopCheck aims to minimize false positives. Most of the criteria checked assume 
 ## Requirements
 
 - [GNU Guile](https://www.gnu.org/software/guile/) >= 3.0.x (earliest version tested)
-- [Guile-Git](https://codeberg.org/guile-git/guile-git) >= 0.10.0
+- [Guile-Git](https://codeberg.org/guile-git/guile-git) >= 0.12.0
   Note: most distributions provide an old version of Guile-Git.
   Installing manually or using Guix may be required.
 
