@@ -301,8 +301,11 @@ slopcheck [options]
 
       (if (eq? commit-sign-counter 0)
           (format #t "No LLM signs found in ~a commits\n" commit-counter)
-          (format #t "Found LLM signs in ~a out of ~a commits\nLast clean commit might be ~a\n"
-                     commit-sign-counter commit-counter last-clean))
+	  (begin
+	    (format #t "Found LLM signs in ~a out of ~a commits\n" commit-sign-counter commit-counter)
+            (if last-clean
+		(format #t "Last clean commit might be ~a\n" last-clean)
+		(display "Found signs in first commit\n"))))
 
       (+ file-sign-counter commit-sign-counter))))
 
