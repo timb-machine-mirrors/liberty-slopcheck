@@ -28,7 +28,7 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
   #:use-module (git)
   #:use-module (git clone)
   #:use-module (git repository)
-  #:use-module (git revwalker)
+  #:autoload (git revwalker) (revwalk-new revwalk-push! revwalk-next!)
   #:export (main))
 
 ;; SlopCheck looks for these signs across a repository.
@@ -144,6 +144,7 @@ exec guile -e '(@ (slopcheck) main)' -s "$0" "$@"
                           (and (not clone-url) (not local-path)))))
 
     (libgit2-init!)
+    (check-git-revwalker)
     (define exit-status 1)
 
     (cond (help-chosen
@@ -176,6 +177,13 @@ slopcheck [options]
     (if (> exit-status 255)
        (set! exit-status 255))
     (exit exit-status)))
+
+(define (check-git-revwalker)
+  "Checks that the installed version of Guile-Git at least implements (git revwalker)."
+
+  (unless (resolve-module '(git revwalker) #:ensure #f)
+    (display "Guile-Git installation is too old; please install a newer version as per README\n")
+    (exit 1)))
 
 (define-syntax-rule (selfcheck-license expr-if-licensed)
   "Checks whether this program is accompanied by an expected software license text file (COPYING*).
