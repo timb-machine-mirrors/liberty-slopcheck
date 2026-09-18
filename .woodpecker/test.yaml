@@ -1,0 +1,10 @@
+when:
+  - event: pull_request
+  - event: push
+    branch: ${CI_REPO_DEFAULT_BRANCH}
+
+steps:
+  test:
+    image: jriga/guile
+    commands:
+      - ./slopcheck.scm -p .
